@@ -1,97 +1,184 @@
-# Ordenha — Vacas leiteiras
+# 🌱 Mapa do Tesouro — Sistema Inteligente de Irrigação
 
-Aplicação em Python para calcular e gerenciar a alimentação (ração) de um rebanho de vacas leiteiras. Fornece um menu interativo que permite cadastrar vacas, carregar um rebanho inicial, listar a ordenha, alterar produção, excluir animais, visualizar a tabela de memória e exportar/importar dados em texto/JSON. Pode persistir os registros em uma tabela Oracle ou trabalhar apenas em memória e gerar arquivos em disco.
+Sistema desenvolvido em Python para simular um controlador de irrigação inteligente aplicado ao cultivo de tomate. O projeto combina parâmetros de umidade do solo, pH, disponibilidade de nutrientes (NPK) e previsão de chuva para determinar quando a bomba de irrigação deve ser ligada ou desligada.
 
-## Stack
-- Language(s): Python 3
-- Notable library: oracledb (conexão com banco Oracle)
+A proposta é demonstrar, de forma didática, como a programação e a automação podem contribuir para o uso mais eficiente da água na agricultura.
 
-## Principais funcionalidades
-- Cálculo da ração diária a partir dos litros de leite (referência: 30 L → 9 kg).
-- Quebra da ração em manhã/tarde e decomposição da mistura em milho/soja/concentrado conforme proporções (75/25/5).
-- Persistência opcional em tabela Oracle (`ordenha`) com CRUD básico.
-- Export/Import de rebanho em JSON e geração de relatório em texto.
-- Exibição de estrutura de dados (lista, tupla, dicionário, tabela de memória) para fins didáticos.
+## 📌 Sobre o projeto
 
-## Como está organizado (resumo)
+O **Mapa do Tesouro** simula uma lavoura de tomate monitorada por um sistema de irrigação automatizado. A partir dos parâmetros informados, o sistema avalia as condições de cultivo e aplica regras predefinidas para tomar decisões sobre a irrigação.
+
+O projeto foi desenvolvido com foco em aprendizado, permitindo compreender como sensores, dados climáticos e regras de decisão podem ser integrados em uma solução de agricultura digital.
+
+## ✨ Funcionalidades
+
+- **Controle de irrigação:** simula o acionamento e o desligamento da bomba conforme as condições do solo.
+- **Monitoramento da umidade:** utiliza valores de umidade para identificar a necessidade de irrigação.
+- **Conversão de leitura do LDR:** transforma uma leitura analógica em um valor estimado de pH, conforme as regras didáticas do projeto.
+- **Verificação do pH:** avalia se o solo está dentro da faixa definida para o cultivo de tomate.
+- **Controle de nutrientes:** considera a disponibilidade de nitrogênio (N), fósforo (P) e potássio (K).
+- **Previsão de chuva:** permite consultar dados da OpenWeather para auxiliar na decisão de irrigação.
+- **Simulação de cenários:** permite alterar os parâmetros do sistema e observar as decisões resultantes.
+
+## 🛠️ Tecnologias utilizadas
+
+- **Python:** implementação das regras de negócio e da simulação.
+- **OpenWeather API:** consulta de informações meteorológicas.
+- **Variáveis de ambiente:** configuração da chave de API e da cidade de consulta.
+- **Programação orientada a objetos:** organização do estado e do comportamento do sistema em classes.
+
+> Observação: o projeto utiliza a biblioteca padrão do Python para sua lógica principal. A consulta à OpenWeather depende da implementação presente no módulo `clima.py` e pode exigir uma biblioteca externa, dependendo de como as requisições HTTP foram implementadas.
+
+## 📂 Estrutura do projeto
+
+```text
+.
+├── __init__.py
+├── clima.py
+├── cultura.py
+├── irrigacao.py
+├── sistema.py
+└── README.md
 ```
-main.py                 -> Aplicação principal (menu, fluxo de execução)
-funcoes.py              -> Funções puras: cálculo de ração, montagem de registro, resumo
-procedimentos.py        -> Procedimentos: saída formatada, pausa, limpeza de tela
-rebanho.py              -> Estruturas iniciais e transformação (tuplas → dicionários)
-arquivos.py             -> Leitura/gravação de texto e JSON (pasta `dados/`)
-banco.py                -> Operações SQL para a tabela `ordenha` (Oracle)
-conexao.py              -> Conexão com o Oracle (atualmente com parâmetros hardcoded)
-requirements.txt        -> Dependências (oracledb)
-dados/                  -> (pasta criada em tempo de execução) armazenará ordenha.txt / ordenha.json
+
+### Responsabilidade de cada arquivo
+
+| Arquivo | Descrição |
+|---|---|
+| `cultura.py` | Define os parâmetros da cultura do tomate, incluindo as faixas de pH e umidade e as regras de conversão do LDR. |
+| `irrigacao.py` | Implementa as regras que determinam o estado da bomba de irrigação. |
+| `sistema.py` | Gerencia o estado do sistema e disponibiliza métodos para alterar os parâmetros monitorados. |
+| `clima.py` | Consulta a OpenWeather e interpreta os dados meteorológicos para obter informações sobre a possibilidade de chuva. |
+| `__init__.py` | Centraliza as exportações da cultura e do sistema principal, conforme a organização dos módulos. |
+
+## ⚙️ Regras de decisão da irrigação
+
+O sistema utiliza parâmetros didáticos para simular as decisões de irrigação.
+
+| Parâmetro | Regra configurada |
+|---|---|
+| Faixa ideal de pH | Entre 6,0 e 6,5 |
+| Umidade para ligar a irrigação | Abaixo de 70% |
+| Umidade para desligar a irrigação | 80% |
+| Probabilidade de chuva | Acima de 60%: suspende a irrigação |
+| Nutrientes | N, P e K devem estar disponíveis para permitir a irrigação |
+
+### Como funciona?
+
+1. O sistema recebe os valores dos parâmetros monitorados.
+2. Avalia a umidade e verifica se existe necessidade de irrigação.
+3. Verifica se o pH está na faixa configurada e se os nutrientes necessários estão disponíveis.
+4. Considera a previsão de chuva para evitar irrigação desnecessária.
+5. Atualiza a decisão e o estado simulado da bomba conforme as regras implementadas.
+
+**Importante:** os valores apresentados são parâmetros educacionais. Eles devem ser validados agronomicamente antes de serem utilizados em uma lavoura real. O comportamento exato nas condições de limite depende das implementações de `cultura.py` e `irrigacao.py`.
+
+## 🚀 Como executar
+
+### Pré-requisitos
+
+- Python 3.10 ou superior, caso compatível com a versão utilizada no desenvolvimento.
+- Git, caso deseje clonar o repositório.
+- Chave de API da OpenWeather, para utilizar a consulta meteorológica.
+
+
+### Crie um ambiente virtual
+
+**Windows — PowerShell:**
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-Como o programa se comporta no runtime:
-- `main.py` abre a conexão com o Oracle (se disponível), garante a existência da tabela `ordenha` e apresenta um menu interativo.
-- As opções do menu usam funções de `funcoes.py` e procedimentos de `procedimentos.py`. A persistência em banco é feita por `banco.py`. Se o Oracle não estiver acessível, o programa pode operar somente em memória e gerar os arquivos em `dados/`.
+**Linux ou macOS:**
 
-## Requisitos
-- Python 3.8+
-- Biblioteca: oracledb
-Instale dependências:
 ```bash
-pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-## Como executar
-1. Ajuste a configuração de conexão com o Oracle (ver seção seguinte).
-2. Do diretório do projeto:
-```bash
-python main.py
-```
+O exemplo abaixo demonstra a utilização da classe principal, conforme a interface apresentada no projeto:
 
-Ao executar, um menu interativo será exibido com as opções:
-- 1 — Cadastrar vaca
-- 2 — Carregar as 25 vacas (rebanho inicial)
-- 3 — Listar ordenha
-- 4 — Alterar litros de leite
-- 5 — Excluir vaca
-- 6 — Mostrar tabela de memória (explica estruturas)
-- 7 — Gravar arquivo texto (gera `dados/ordenha.txt`)
-- 8 — Gravar arquivo JSON (gera `dados/ordenha.json`)
-- 9 — Ler arquivo texto
-- 10 — Ler arquivo JSON (importa e, opcionalmente, grava no banco)
-- 0 — Sair
-
-## Configuração do banco (Oracle)
-O código atual de conexão está em `conexao.py` e, neste repositório, contém parâmetros diretamente no arquivo. Por segurança e portabilidade, recomenda-se alterar para usar variáveis de ambiente em vez de credenciais hardcoded.
-
-Exemplo sugerido (substituir `conexao.py` por algo como):
 ```python
-import os
-import oracledb
+from sistema import SistemaIrrigacao
 
-def conectar():
-    host = os.getenv("ORACLE_HOST", "oracle.fiap.com.br")
-    port = int(os.getenv("ORACLE_PORT", "1521"))
-    sid = os.getenv("ORACLE_SID", "ORCL")
-    user = os.getenv("ORACLE_USER")
-    password = os.getenv("ORACLE_PASSWORD")
-    dsn = oracledb.makedsn(host, port, sid=sid)
-    return oracledb.connect(user=user, password=password, dsn=dsn, tcp_connect_timeout=20)
+sistema = SistemaIrrigacao(
+    umidade=60.0,
+    temperatura=25.0
+)
+
+print(sistema.ultima_decisao)
+
+sistema.ajustar_ldr(2000)
+sistema.alternar_nitrogenio()
+sistema.alternar_fosforo()
+sistema.alternar_potassio()
+sistema.ajustar_umidade(68)
+
+print(sistema.ultima_decisao)
 ```
 
-Variáveis de ambiente recomendadas:
-- ORACLE_HOST
-- ORACLE_PORT
-- ORACLE_SID
-- ORACLE_USER
-- ORACLE_PASSWORD
+Esse exemplo cria uma instância do sistema, consulta a decisão inicial e modifica os parâmetros para simular um novo cenário.
 
-Observação: se não houver um Oracle disponível (ou a conexão falhar), o programa lida com o erro e pode trabalhar com o rebanho em memória; muitos comandos continuam funcionando (e os arquivos JSON/txt podem ser usados para salvar/recuperar dados).
+**Nota:** os métodos e os parâmetros devem corresponder às assinaturas efetivamente implementadas nos arquivos do projeto.
 
-## Arquivos principais (descrição rápida)
-- main.py — fluxo principal, menu e integração entre módulos.
-- funcoes.py — cálculo da ração, montagem de registro de vaca, resumo do rebanho.
-- procedimentos.py — funções de I/O e exibição.
-- rebanho.py — rebanho inicial (25 vacas) e helpers para criar a tabela de memória.
-- arquivos.py — geração e leitura de `ordenha.txt` e `ordenha.json` na pasta `dados/`.
-- banco.py — SQL para criar a tabela `ordenha` e operações CRUD.
-- conexao.py — ponto único de conexão com Oracle (substituir para usar variáveis de ambiente).
-- requirements.txt — dependência: oracledb
+## 🌦️ Configuração da OpenWeather
+
+Para consultar a previsão meteorológica, obtenha uma chave de API na [OpenWeather](https://openweathermap.org/api).
+
+Configure as variáveis de ambiente:
+
+**Windows — PowerShell:**
+
+```powershell
+$env:OPENWEATHER_API_KEY="SUA_CHAVE_AQUI"
+$env:CIDADE="Ribeirao Preto,BR"
+```
+
+**Linux ou macOS:**
+
+```bash
+export OPENWEATHER_API_KEY="SUA_CHAVE_AQUI"
+export CIDADE="Ribeirao Preto,BR"
+```
+
+Em seguida, utilize a função disponibilizada pelo módulo climático:
+
+```python
+from clima import consultar_openweather
+
+previsao = consultar_openweather(
+    "Ribeirao Preto,BR",
+    "SUA_CHAVE_AQUI"
+)
+
+print(previsao.resumo())
+```
+
+O módulo também disponibiliza funções para carregar configurações de ambiente:
+
+```python
+from pathlib import Path
+from clima import carregar_env, cidade_padrao, chave_openweather
+
+carregar_env(Path(".env"))
+
+print(chave_openweather())
+print(cidade_padrao())
+```
+
+
+## 🧪 Possibilidades de evolução
+
+O projeto pode ser expandido gradualmente com:
+
+- Testes automatizados das regras de irrigação.
+- Histórico das decisões e das alterações dos parâmetros.
+- Interface de terminal ou aplicação web para visualização dos dados.
+- Integração com sensores físicos e microcontroladores, como ESP32.
+- Alertas de condições inadequadas de umidade, pH ou nutrientes.
+- Relatórios para comparar cenários de irrigação.
+- Melhorias na interpretação dos dados meteorológicos e no tratamento de falhas da API.
+
 
